@@ -17,9 +17,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserEntity user) {
         try {
-            userService.createUser(user);
-
-            return ResponseEntity.ok("User successfully created!");
+            return ResponseEntity.ok("User with id " + userService.createUser(user) + " successfully created!");
         } catch (UserAlreadyExistException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -43,6 +41,17 @@ public class UserController {
         try {
             var user = userService.getUserById(id);
             return ResponseEntity.ok(user);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("User: HTTP Error!");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok("User with id: " + userService.deleteUserById(id) + " successfully deleted!");
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

@@ -15,14 +15,16 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
-    public UserEntity createUser(UserEntity user) throws UserAlreadyExistException {
+    public Long createUser(UserEntity user) throws UserAlreadyExistException {
         Optional<UserEntity> existingUser = Optional.ofNullable(userRepo.findByUsername(user.getUsername()));
 
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistException("User already exist!");
         }
 
-        return userRepo.save(user);
+        userRepo.save(user);
+
+        return user.getId();
     }
 
     public Iterable<UserEntity> getAllUsers() {
@@ -33,5 +35,14 @@ public class UserService {
         return userRepo.findById(id)
                 .map(UserModel::fromEntity)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
+    }
+
+    public Long deleteUserById(Long id) throws UserNotFoundException {
+        UserEntity user = userRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found!"));
+
+        userRepo.delete(user);
+
+        return id;
     }
 }
