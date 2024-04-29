@@ -8,27 +8,28 @@ import lv.psanatovs.taskapi.repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepo userRepo;
 
-    public Long createUser(UserEntity user) throws UserAlreadyExistException {
-        Optional<UserEntity> existingUser = Optional.ofNullable(userRepo.findByUsername(user.getUsername()));
+    public Long createUser(UserEntity user) {
+        userRepo.findByUsername(user.getUsername())
+                .ifPresent(existingUser -> {
+                    throw new UserAlreadyExistException("User already exist!");
+                });
 
-        if (existingUser.isPresent()) {
-            throw new UserAlreadyExistException("User already exist!");
-        }
-
-        userRepo.save(user);
-
-        return user.getId();
+        return userRepo.save(user).getId();
     }
 
-    public Iterable<UserEntity> getAllUsers() {
-        return userRepo.findAll();
+    public List<UserModel> getAllUsers() {
+        return StreamSupport.stream(userRepo.findAll().spliterator(), false)
+                .map(UserModel::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public UserModel getUserById(Long id) throws UserNotFoundException {
@@ -37,12 +38,13 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
     }
 
-    public Long deleteUserById(Long id) throws UserNotFoundException {
-        UserEntity user = userRepo.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found!"));
-
-        userRepo.delete(user);
-
-        return id;
+    public void deleteUserById(Long id) {
+        userRepo.findById(id)
+                .ifPresentOrElse(
+                        userRepo::delete,
+                        () -> {
+                            throw new UserNotFoundException("User not found!");
+                        }
+                );
     }
 }

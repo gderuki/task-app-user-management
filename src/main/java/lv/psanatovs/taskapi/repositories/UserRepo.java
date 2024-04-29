@@ -2,8 +2,9 @@ package lv.psanatovs.taskapi.repositories;
 
 import lv.psanatovs.taskapi.entities.UserEntity;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 public interface UserRepo extends CrudRepository<UserEntity, Long> {
-    UserEntity findByUsername(String username);
+    Optional<UserEntity> findByUsername(String username);
 }

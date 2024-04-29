@@ -1,9 +1,8 @@
 package lv.psanatovs.taskapi.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class UserEntity {
@@ -14,7 +13,14 @@ public class UserEntity {
     private String username;
     private String password;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TodoEntity> todos;
+
     public UserEntity() {
+    }
+
+    public List<TodoEntity> getTodos() {
+        return todos;
     }
 
     public Long getId() {

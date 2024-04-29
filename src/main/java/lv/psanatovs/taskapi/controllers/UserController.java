@@ -17,7 +17,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserEntity user) {
         try {
-            return ResponseEntity.ok("User with id " + userService.createUser(user) + " successfully created!");
+            return ResponseEntity.ok(userService.createUser(user));
         } catch (UserAlreadyExistException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -28,7 +28,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
         try {
-            Iterable<UserEntity> users = userService.getAllUsers();
+            var users = userService.getAllUsers();
             users.forEach(System.out::println);
             return ResponseEntity.ok(users);
         } catch (Exception e) {
@@ -39,8 +39,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
-            var user = userService.getUserById(id);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(userService.getUserById(id));
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -51,7 +50,8 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok("User with id: " + userService.deleteUserById(id) + " successfully deleted!");
+            userService.deleteUserById(id);
+            return ResponseEntity.ok("User was successfully deleted!");
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
