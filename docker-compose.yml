@@ -6,8 +6,14 @@ services:
       - 'POSTGRES_USER=todoapi'
       - 'POSTGRES_PASSWORD=todoapi'
       - 'POSTGRES_DB=todoapi_db'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+    ports:
+      - "5432:5432"
   app:
     build: ./
     container_name: 'java-app'
     ports:
       - '8080:8080'
+volumes:
+  postgres_data:
